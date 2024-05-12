@@ -1,0 +1,392 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPLzZIPbpRetl2aoGq3qZJf",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rffsl/Chat_IA1/blob/main/TESTE\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n"
+      ],
+      "metadata": {
+        "id": "w5exu9t6_yRw"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Instalando SDK DO GOOGLE"
+      ],
+      "metadata": {
+        "id": "DBvvZB6IB7xx"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install -q -U google-generativeai"
+      ],
+      "metadata": {
+        "id": "Hjvno5WxBOUt"
+      },
+      "execution_count": 11,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Instalando a Biblioteca PyPDF2"
+      ],
+      "metadata": {
+        "id": "XTxOo9fgCHAt"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install -q -U PyPDF2"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "P3OZPIOiBZWm",
+        "outputId": "e57cd9e3-0765-45a3-ffdb-fc2eaea45f20"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[?25l     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/232.6 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K     \u001b[91m━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[90m╺\u001b[0m\u001b[90m━━━━━━━━━━━━━\u001b[0m \u001b[32m153.6/232.6 kB\u001b[0m \u001b[31m4.5 MB/s\u001b[0m eta \u001b[36m0:00:01\u001b[0m\r\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m232.6/232.6 kB\u001b[0m \u001b[31m4.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install tesseract -v"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "WDy0QBkdMMKL",
+        "outputId": "83b2fd61-b41b-4168-fadb-67f375bcfce7"
+      },
+      "execution_count": 67,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Using pip 23.1.2 from /usr/local/lib/python3.10/dist-packages/pip (python 3.10)\n",
+            "Requirement already satisfied: tesseract in /usr/local/lib/python3.10/dist-packages (0.1.3)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install -q -U PdfReader"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3kYH5CorOzod",
+        "outputId": "64eb67d6-7a09-4e9c-e630-294d11ee71df"
+      },
+      "execution_count": 80,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m135.6/135.6 kB\u001b[0m \u001b[31m3.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m288.3/288.3 kB\u001b[0m \u001b[31m8.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m2.1/2.1 MB\u001b[0m \u001b[31m13.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import requests\n",
+        "import PyPDF2\n",
+        "import os\n",
+        "import pdfreader\n",
+        "from PIL import Image\n",
+        "import google.generativeai as genai\n",
+        "from google.colab import userdata\n",
+        "api_key = userdata.get(\"SECRET_KEY\")\n",
+        "genai.configure(api_key=api_key)"
+      ],
+      "metadata": {
+        "id": "7CZ955F8Bsxr"
+      },
+      "execution_count": 83,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Função para baixar PDF do banco de dados"
+      ],
+      "metadata": {
+        "id": "qFKVnSTsByVd"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def baixar_pdf(url_pdf, nome_arquivo):\n",
+        "  \"\"\"\n",
+        "  Baixa um arquivo PDF do banco de dados online e o salva localmente.\n",
+        "\n",
+        "  Args:\n",
+        "    url_pdf: URL do arquivo PDF no banco de dados.\n",
+        "    nome_arquivo: Nome do arquivo PDF a ser salvo localmente.\n",
+        "  \"\"\"\n",
+        "  response = requests.get(url_pdf)\n",
+        "  if response.status_code == 200:\n",
+        "    with open(nome_arquivo, 'wb') as arquivo:\n",
+        "      arquivo.write(response.content)\n",
+        "  else:\n",
+        "    print(f\"Erro ao baixar PDF: {response.status_code}\")"
+      ],
+      "metadata": {
+        "id": "hw1PDnnsCuo6"
+      },
+      "execution_count": 17,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Função para transcrever PDF usando PyPDF2"
+      ],
+      "metadata": {
+        "id": "KE0cCO9oCz37"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def transcrever_pdf_pypdf2(nome_arquivo):\n",
+        "  \"\"\"\n",
+        "  Transcreve o texto de um arquivo PDF usando PyPDF2.\n",
+        "\n",
+        "  Args:\n",
+        "    nome_arquivo: Nome do arquivo PDF a ser transcrito.\n",
+        "  \"\"\"\n",
+        "  with open(nome_arquivo, 'rb') as pdf_file:\n",
+        "    reader = PyPDF2.PdfFileReader(pdf_file)\n",
+        "    for pagina in reader.pages:\n",
+        "      texto_pagina = pagina.extractText()\n",
+        "      print(texto_pagina)"
+      ],
+      "metadata": {
+        "id": "GDoZUQ5rC0uj"
+      },
+      "execution_count": 18,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Função para transcrever PDF usando OCR (opcional)"
+      ],
+      "metadata": {
+        "id": "BOk9-c90C8b3"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def transcrever_pdf_ocr(nome_arquivo):\n",
+        "  \"\"\"\n",
+        "  Transcreve o texto de um arquivo PDF usando OCR (Tesseract).\n",
+        "\n",
+        "  Args:\n",
+        "    nome_arquivo: Nome do arquivo PDF a ser transcrito.\n",
+        "  \"\"\"\n",
+        "  try:\n",
+        "    import pytesseract  # Instale o Tesseract se não estiver instalado\n",
+        "    with open(nome_arquivo, 'rb') as pdf_file:\n",
+        "      reader = PyPDF2.PdfReader(pdf_file)\n",
+        "      for pagina in reader.pages:\n",
+        "        imagem_pagina = pagina.extract_image()\n",
+        "        imagem = Image.fromarray(imagem_pagina)\n",
+        "        texto_pagina = pytesseract.image_to_string(imagem)\n",
+        "        print(texto_pagina)\n",
+        "  except ImportError:\n",
+        "    print(\"Erro: O Tesseract OCR não está instalado. Instale-o para usar OCR.\")\n"
+      ],
+      "metadata": {
+        "id": "ccYIkRiqC9Qr"
+      },
+      "execution_count": 19,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Função para extrair imagens de um PDF"
+      ],
+      "metadata": {
+        "id": "K3ZfucdKDIVe"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def extrair_imagens_pdf(nome_arquivo):\n",
+        "  \"\"\"\n",
+        "  Extrai as imagens de um arquivo PDF e as salva como arquivos PNG.\n",
+        "\n",
+        "  Args:\n",
+        "    nome_arquivo: Nome do arquivo PDF a ser processado.\n",
+        "  \"\"\"\n",
+        "  with open(nome_arquivo, 'rb') as pdf_file:\n",
+        "    reader = PyPDF2.PdfReader(pdf_file)\n",
+        "    for pagina in reader.pages:\n",
+        "      imagens = pagina.extract_images()\n",
+        "      for i, imagem in enumerate(imagens):\n",
+        "        imagem.save(f\"imagem_{pagina.page_number}_{i}.png\")\n",
+        "        print(f\"Imagem salva: imagem_{pagina.page_number}_{i}.png\")"
+      ],
+      "metadata": {
+        "id": "_dFb_m-7DJFi"
+      },
+      "execution_count": 20,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Exemplo de uso"
+      ],
+      "metadata": {
+        "id": "_YPudbV0DQC1"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "url_pdf = \"http://www.dominiopublico.gov.br/pesquisa/ResultadoPesquisaObraForm.do?first=50&skip=0&ds_titulo=A%20divina%20com&co_autor=&no_autor=&co_categoria=2&pagina=1&select_action=Submit&co_midia=2&co_obra=&co_idioma=1&colunaOrdenar=DS_TITULO&ordem=null\"\n",
+        "nome_arquivo = \"arquivo.pdf\""
+      ],
+      "metadata": {
+        "id": "eTScH35VDQyK"
+      },
+      "execution_count": 51,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Baixe o PDF do banco de dados"
+      ],
+      "metadata": {
+        "id": "tip4SUJJFUdT"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "baixar_pdf(url_pdf, nome_arquivo)"
+      ],
+      "metadata": {
+        "id": "77xy3DZULKEw"
+      },
+      "execution_count": 52,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Caminho para o seu arquivo PDF"
+      ],
+      "metadata": {
+        "id": "Kmozv-sGP2lY"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pdf_path = \"caminho/para/seu/arquivo.pdf\""
+      ],
+      "metadata": {
+        "id": "jQ_fQtIeP3S1"
+      },
+      "execution_count": 93,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Abra o PDF e armazene-o em uma variável"
+      ],
+      "metadata": {
+        "id": "galOkLpxP_kc"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "with pdfreader.open_pdf(pdf_path) as pdf:"
+      ],
+      "metadata": {
+        "id": "EkmuYrsGQPqz",
+        "outputId": "72afcb6a-595f-4929-fd83-77eff5b48a8c",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 106
+        }
+      },
+      "execution_count": 91,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "SyntaxError",
+          "evalue": "incomplete input (<ipython-input-91-c6b9d8291b3a>, line 1)",
+          "traceback": [
+            "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-91-c6b9d8291b3a>\"\u001b[0;36m, line \u001b[0;32m1\u001b[0m\n\u001b[0;31m    with pdfreader.open_pdf(pdf_path) as pdf:\u001b[0m\n\u001b[0m                                             ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m incomplete input\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
